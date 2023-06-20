@@ -1,69 +1,23 @@
-FROM node:latest
+# Base image
+FROM node:14
 
-
-
-
-RUN apt-get -y update
-
-RUN apt-get install -y xsel
-
-
-
-
-# set working directory
-
+# Set the working directory
 WORKDIR /app
 
-
-
-
-# Copies package.json and package-lock.json to Docker environment
-
+# Copy package.json and package-lock.json
 COPY package*.json ./
 
+# Install dependencies
+RUN npm install
 
-
-
-# Installs all node packages
-
-RUN npm install --force 
-
-
-
-
-# Copies everything over to Docker environment
-
+# Copy the rest of the application code
 COPY . .
 
+# Set the default environment variables, if any
+ENV PORT=3000
 
+# Expose the port on which your Node.js application will listen
+EXPOSE $PORT
 
-
-# Build for production.
-
-RUN npm run build 
-
-
-
-
-# Install `serve` to run the application.
-
-RUN npm install -g serve
-
-
-
-
-RUN rm -rf node_modules
-
-RUN rm -rf src
-
-
-
-
-# Uses port which is used by the actual application
-
-EXPOSE 3000
-
-
-
-
-CMD serve -s dist/
+# Start the Node.js application
+CMD ["node", "app.js"]
